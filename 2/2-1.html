@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>从线条开始</title>
+</head>
+<body>
+<div style="padding: 0; margin: 0; ">
+    <a href="../index.html">返回</a>
+</div>
+
+<div id="canvas-warp">
+    <canvas id="canvas" style="border: 1px solid #aaaaaa; display: block; margin: 50px auto;">
+        你的浏览器居然不支持Canvas？！赶快换一个吧！！
+    </canvas>
+</div>
+
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        var context = canvas.getContext('2d');
+
+        context.beginPath(); //新建一条path
+        context.moveTo(100, 100);  //把画笔移动到指定的坐标
+        context.lineTo(300, 300); //绘制一条从当前位置到指定坐标(600, 600)的直线.
+        context.lineTo(100, 400);
+        context.lineWidth = 5; // 宽度
+        context.strokeStyle = "#AA394C"; // 线条颜色
+        context.closePath();  //闭合路径。会拉一条从当前点到path起始点的直线。如果当前点与起始点重合，则什么都不做
+        context.stroke(); // 通过线条来绘制图形轮廓
+
+        context.beginPath();
+        context.moveTo(300,100);
+        context.lineTo(500,300);
+        context.lineTo(300,500);
+        context.lineWidth = 5;
+        context.strokeStyle = "blue";
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(500,100);
+        context.lineTo(700,300);
+        context.lineTo(500,500);
+        context.lineWidth = 5;
+        context.strokeStyle = "black";
+        context.stroke();
+    }
+</script>
+</body>
+</html>

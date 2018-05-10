@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绘制矩形</title>
+</head>
+<body>
+<div style="padding: 0; margin: 0; ">
+    <a href="../index.html">返回</a>
+</div>
+
+<div id="canvas-warp">
+    <canvas id="canvas" style="border: 1px solid #aaaaaa; display: block; margin: 50px auto;">
+        你的浏览器居然不支持Canvas？！赶快换一个吧！！
+    </canvas>
+</div>
+
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        var context = canvas.getContext('2d');
+
+        context.beginPath(); //新建一条path
+        context.moveTo(100, 100);  //把画笔移动到指定的坐标
+        context.lineTo(100, 300);
+        context.lineTo(600, 300);
+        context.lineTo(600, 100);
+        context.closePath();        //使用closePath()闭合图形
+
+        context.fillStyle = "yellow";   //选择油漆桶的颜色
+        context.lineWidth = 5; // 宽度
+        context.strokeStyle = "#AA394C"; // 线条颜色
+        context.fill(); //通过填充路径的内容区域生成实心的图形
+        context.stroke(); // 通过线条来绘制图形轮廓
+    }
+</script>
+</body>
+</html>

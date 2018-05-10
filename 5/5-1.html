@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>填充线性渐变</title>
+</head>
+<body>
+<div style="padding: 0; margin: 0; ">
+    <a href="../index.html">返回</a>
+</div>
+
+<div id="canvas-warp">
+    <canvas id="canvas" style="border: 1px solid #aaaaaa; display: block; margin: 50px auto;">
+        你的浏览器居然不支持Canvas？！赶快换一个吧！！
+    </canvas>
+</div>
+
+<script>
+    window.onload = function () {
+        var canvas = document.getElementById('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        var context = canvas.getContext('2d');
+        //
+        // context.rect(200, 100, 400, 400);
+        //
+        // // 添加渐变线
+        // var grd = context.createLinearGradient(200, 300, 600, 300);
+        //
+        // //添加颜色断点
+        // grd.addColorStop(0,"black");
+        // grd.addColorStop(0.5,"white");
+        // grd.addColorStop(1,"black");
+        //
+        // //应用渐变
+        // context.fillStyle = grd;
+        //
+        // context.fill();
+
+
+        //添加渐变线
+        var grd = context.createLinearGradient(100,300,700,300);
+
+        //添加颜色断点
+        grd.addColorStop(0,"olive");
+        grd.addColorStop(0.25,"maroon");
+        grd.addColorStop(0.5,"aqua");
+        grd.addColorStop(0.75,"fuchsia");
+        grd.addColorStop(1,"teal");
+
+        //应用渐变
+        context.fillStyle = grd;
+        context.strokeStyle = grd;
+
+        context.strokeRect(200,50,300,50);
+        context.strokeRect(100,220,30,44);
+
+        context.fillRect(200,300,300,50);
+        context.fillRect(200,350,150,50);
+        context.fillRect(200,400,450,50);
+
+        context.fillRect(0,550,800,25);
+
+
+        //添加渐变线
+        var grd = context.createRadialGradient(400,300,100,400,300,200);
+
+        //添加颜色断点
+        grd.addColorStop(0,"olive");
+        grd.addColorStop(0.25,"maroon");
+        grd.addColorStop(0.5,"aqua");
+        grd.addColorStop(0.75,"fuchsia");
+        grd.addColorStop(0.25,"teal");
+
+        //应用渐变
+        context.fillStyle = grd;
+
+        context.fillRect(100,100,600,400);
+    }
+</script>
+</body>
+</html>
