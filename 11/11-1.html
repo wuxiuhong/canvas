@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>圆形进度条</title>
+    <style>
+        #myCanvas {
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div id="canvas-warp">
+    <canvas id="myCanvas">
+        你的浏览器居然不支持Canvas？！赶快换一个吧！！
+    </canvas>
+</div>
+
+<script>
+    // 方法一：arc动态画圆
+    var c = document.getElementById('myCanvas');
+    var ctx = c.getContext('2d');
+    var mW = c.width = 300;
+    var mH = c.height = 300;
+
+    var lineWidth = 5;
+    var r = mW / 2;
+    var cR = r - 4 * lineWidth;
+    var startAngle = -(1 / 2 * Math.PI);
+    var endAngle = startAngle + 2 * Math.PI;
+    var xAngle = 1 * (Math.PI / 180);
+    var fontSize = 35;
+    var temAngle = startAngle;
+
+    var render = function () {
+        if (temAngle >= endAngle) return;
+        if (temAngle + xAngle > endAngle) {
+            temAngle = endAngle;
+        } else {
+            temAngle += xAngle;
+        }
+
+        ctx.clearRect(0, 0, mW, mH);
+
+        //画圆
+        // ctx.beginPath();
+        // ctx.lineWidth = lineWidth;
+        // ctx.strokeStyle = "#1C86D1";
+        // ctx.arc(r, r, cR, startAngle, endAngle);
+        // ctx.stroke();
+        // ctx.closePath();
+        ctx.save();
+        ctx.beginPath();
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = "#1C86D1";
+        ctx.translate(r, r);
+        ctx.rotate(-Math.PI);
+        for (var i = 0; i <= temAngle - startAngle; i += xAngle) {
+            ctx.moveTo(0, cR - lineWidth);
+            ctx.lineTo(0, cR);
+            ctx.rotate(xAngle);
+        }
+        ctx.stroke();
+        ctx.closePath();
+        ctx.restore();
+
+
+        // 写字
+        ctx.fillStyle = "#1d89d5";
+        ctx.font = fontSize + 'px Microsoft Yahei';
+        ctx.textAlign = 'center';
+        ctx.fillText(Math.round((temAngle - startAngle) / (endAngle - startAngle) * 100) + '%', r, r + fontSize / 2);
+
+        requestAnimationFrame(render);
+    };
+    render();
+</script>
+</body>
+</html>
