@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>json</title>
+</head>
+<body>
+
+<script src="js/main.js"></script>
+<script>
+    var json = {
+        version: '1.0',
+        width: 800,
+        height: 600,
+        tx: 279.2579313267967,
+        ty: 220.3450108617,
+        comps: [
+            {
+                type: 'shape',
+                rect: [10, 40, 40, 40],
+                // borderWidth: {
+                //     value: 8,
+                //     func: 'attr@switch.thickness'
+                // },
+                background: '#34495E'
+            }
+        ]
+    }
+    // var canvas = document.createElement("canvas");
+    // canvas.width = json.width;
+    // canvas.height = json.height;
+    //
+    // var ctx = canvas.getContext('2d');
+    // json.comps.forEach((item) => {
+    //     if (item.type === 'shape') {
+    //         Object.keys(item).forEach((obj) => {
+    //             if (obj === 'rect') {
+    //                 ctx.fillRect(item.rect[0], item.rect[1], item.rect[2], item.rect[3]);
+    //             }
+    //             if (obj === 'background') ctx.fillStyle = item[obj];
+    //         });
+    //     }
+    // });
+    new Draw('', {
+        width: json.width,
+        height: json.height
+    }).init({
+        data: json.comps
+    })
+</script>
+
+</body>
+</html>
