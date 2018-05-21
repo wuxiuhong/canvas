@@ -8,7 +8,7 @@
 
 <script src="js/main.js"></script>
 <script>
-    var json = {
+    var data = {
         version: '1.0',
         width: 800,
         height: 600,
@@ -18,34 +18,40 @@
             {
                 type: 'shape',
                 rect: [10, 40, 40, 40],
-                // borderWidth: {
-                //     value: 8,
-                //     func: 'attr@switch.thickness'
-                // },
-                background: '#34495E'
+                borderWidth: {
+                    value: 8,
+                    func: 'attr@switch.thickness'
+                },
+                background: '#34495E',
+                styles: {
+                    "group.background.gradient": {
+                        "_className": "Q.Gradient",
+                        "json": {
+                            "type": "l",
+                            "colors": [
+                                "#90d9fc",
+                                "#b2e5ff",
+                                "#6aa6e5"
+                            ],
+                            "positions": [
+                                0.1,
+                                0.4,
+                                0.9
+                            ],
+                            "angle": 0,
+                            "tx": 0,
+                            "ty": 0
+                        }
+                    }
+                }
             }
         ]
-    }
-    // var canvas = document.createElement("canvas");
-    // canvas.width = json.width;
-    // canvas.height = json.height;
-    //
-    // var ctx = canvas.getContext('2d');
-    // json.comps.forEach((item) => {
-    //     if (item.type === 'shape') {
-    //         Object.keys(item).forEach((obj) => {
-    //             if (obj === 'rect') {
-    //                 ctx.fillRect(item.rect[0], item.rect[1], item.rect[2], item.rect[3]);
-    //             }
-    //             if (obj === 'background') ctx.fillStyle = item[obj];
-    //         });
-    //     }
-    // });
+    };
     new Draw('', {
-        width: json.width,
-        height: json.height
+        width: data.width,
+        height: data.height
     }).init({
-        data: json.comps
+        data: data.comps
     })
 </script>
 
