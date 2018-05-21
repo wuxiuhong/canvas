@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HT拓扑编辑器</title>
+    <meta charset="UTF-8">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <script src="js/ht.js"></script>
+    <script src="js/ht-rulerframe.js"></script>
+
+    <script type="text/javascript">
+        // // 数据容器 承载Data数据的模型
+        var dataModel = new ht.DataModel();
+        // // 拓扑组件
+        var g2d = new ht.graph.GraphView(dataModel);
+        // 刻度尺
+        var rulerFrame = new ht.widget.RulerFrame(g2d);
+        // // 场景主面板
+        var mainSplit = new ht.widget.SplitView(rulerFrame, '', 'h', -260);
+
+
+        function init() {
+            mainSplit.addToDOM();
+        }
+    </script>
+</head>
+
+<body onload="init();">
+</body>
+
+</html>

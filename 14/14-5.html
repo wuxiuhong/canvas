@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HT拓扑编辑器</title>
+    <meta charset="UTF-8">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <script type="text/javascript">
+        htconfig = {
+            Default: {
+                toolbarBackground: 'rgb(240,239,238)',
+                paletteTitleBackground: 'rgb(240,239,238)',
+                paletteTitleHoverBackground: 'rgb(231,231,231)',
+                paletteTitleLabelColor: 'rgb(138, 138, 138)',
+                paletteItemSelectBackground: '',
+                paletteItemHoverBorderColor: 'rgb(138, 138, 138)',
+                toolTipBackground: 'rgb(255, 255, 255)',
+                propertyPaneHeaderBackground: 'rgb(240,239,238)',
+                propertyViewBackground: 'rgb(240,239,238)',
+                splitViewDividerBackground: 'rgb(228,228,228)'
+            }
+        };
+    </script>
+
+    <script src="../../guide/lib/core/ht.js"></script>
+    <script src="../../guide/lib/plugin/ht-cssanimation.js"></script>
+    <script src="../../guide/lib/plugin/ht-form.js"></script>
+    <script src="../../guide/lib/plugin/ht-dialog.js"></script>
+    <script src="../../guide/lib/plugin/ht-palette.js"></script>
+    <script src="../../guide/lib/plugin/ht-rulerframe.js"></script>
+    <script src="../../guide/lib/plugin/ht-propertypane.js"></script>
+    <script src="../../guide/lib/plugin/ht-edgetype.js"></script>
+
+    <!--“连线”交互器-->
+    <script src="CreateEdgeInteractor.js"></script>
+    <!--“不规则图形”交互器-->
+    <script src="CreateShapeInteractor.js"></script>
+
+    <!--json图片-->
+    <script src="predefine.js"></script>
+    <script src="dialog.js"></script>
+    <!--面板的内容-->
+    <script src="palette-config.js"></script>
+    <!--导航栏的内容-->
+    <script src="toolbar-config.js"></script>
+    <!--属性栏的内容-->
+    <script src="properties-config.js"></script>
+    <!--初始化场景的内容-->
+    <script src="datamodel-config.js"></script>
+
+    <script type="text/javascript">
+        // tooltip 文字提示的 div 样式编辑
+        var tooltipDiv = ht.Default.getToolTipDiv();
+        tooltipDiv.style.borderRadius = '5px';
+        tooltipDiv.style.border = '1px solid #eee';
+
+        // 数据容器 承载Data数据的模型
+        dataModel = new ht.DataModel();
+        // 反序列化 datamodel_config 的内容，将 json 内容转为拓扑图场景内容
+        dataModel.deserialize(datamodel_config);
+        dataModel.each(function (data) { if (!(data instanceof ht.Edge)) data.setLayer(1); });
+
+        // 拓扑组件
+        g2d = new ht.graph.GraphView(dataModel);
+        g2d.setLayers(['0', 1]);
+        if (g2d.getEditInteractor()) {
+            g2d.getEditInteractor().setStyle('anchorVisible', false);
+        }
+
+        // 创建交互器对象
+        shapeInteractor = new CreateShapeInteractor(g2d, ht.Shape);
+        edgeInteractor = new CreateEdgeInteractor(g2d);
+        rightAngleInteractor = new CreateEdgeInteractor(g2d, 'v.h');
+
+        // 组件面板
+        palette = new ht.widget.Palette();
+
+        // 工具条
+        toolbar_left = new ht.widget.Toolbar(toolbar_config_left);
+        toolbar_left.getSelectBackground = function () { return 'rgb(240,239,238)'; }
+        toolbar_left.enableToolTip();
+
+        toolbar_right = new ht.widget.Toolbar(toolbar_config_right);
+        toolbar_right.getSelectBackground = function () { return 'rgb(240,239,238)'; }
+        toolbar_right.enableToolTip();
+        // 设置toolbar_right向右靠
+        toolbar_right.setStickToRight(true);
+
+        // 组合工具条
+        topSplit = new ht.widget.SplitView(toolbar_left, toolbar_right, 'h', 0.5);
+        topSplit.setDividerSize(0);
+
+        // 刻度尺
+        rulerFrame = new ht.widget.RulerFrame(g2d);
+
+        // 编辑区域
+        borderPane = new ht.widget.BorderPane();
+        borderPane.setTopView(topSplit);
+        borderPane.setTopHeight(25);
+        borderPane.setCenterView(rulerFrame);
+
+        leftSplit = new ht.widget.SplitView(palette, borderPane, 'h', 260);
+
+        // 树组件
+        treeView = new ht.widget.TreeView(dataModel);
+
+        // 属性面板
+        propertyPane = new ht.widget.PropertyPane(dataModel);
+
+        rightSplit = new ht.widget.SplitView(propertyPane, treeView, 'v', 0.4);
+
+        // 场景主面板
+        mainSplit = new ht.widget.SplitView(leftSplit, rightSplit, 'h', -260);
+
+        // 选中导航栏中的“默认编辑模式”
+        function resetDefault() {
+            toolbar_left.handleClick(toolbar_left.getItemById('edit'));
+        }
+
+        // 初始化组件面板中的内容
+        function initPalette() {
+            var dm = palette.dm();
+
+            // 从 palette_config.js 文件中获取数据
+            for (var name in palette_config) {
+                var info = palette_config[name];
+
+                // 组件面板用ht.Group展示分组，ht.Node展示按钮元素
+                var group = new ht.Group();
+                group.setName(info.name);
+                dm.add(group);// 将节点添加到 palette 的数据容器中
+
+                if (name === 'scene') group.setExpanded(true);
+
+                info.items.forEach(function (item) {
+                    // 新建 ht.Node 类型节点
+                    var node = new ht.Node();
+                    node.setName(item.name);
+                    node.setImage(item.image);
+                    node.item = item;
+                    node.s({
+                        // 设置节点显示图片为填充的方式，这样不同比例的图片也不会因为拉伸而导致变形
+                        'image.stretch': item.stretch || 'centerUniform',
+                        // 设置节点是否可被拖拽
+                        'draggable': item.draggable === undefined ? true : item.draggable
+                    });
+
+                    // 文本类型
+                    if (item.type === ht.Text) {
+                        node.s({
+                            'text': 'Text',
+                            'text.align': 'center',
+                            'text.vAlign': 'middle',
+                            'text.font': '32px Arial'
+                        });
+                    }
+
+                    // 将节点设置为 group 组的孩子
+                    group.addChild(node);
+                    dm.add(node);
+                });
+            }
+        }
+
+        // 初始化拓扑图
+        function initGraphView() {
+            var group, node;
+            // 判断是否为触屏可 Touch 方式交互
+            if (ht.Default.isTouchable) {
+                // 重写此方法可以禁用 HTML5 原生的 Drag 和 Drop 事件并启用模拟的拖拽事件
+                palette.handleDragAndDrop = function (e, state) {
+                    // 判断交互事件所处位置是否在View组件之上
+                    if (ht.Default.containedInView(e, g2d)) {
+                        if (state === 'between') {
+                            e.preventDefault();
+                        }
+                        // 当 state 为 end 时，判断e是否在 graphView 的范围内，如果是，则创建 Node
+                        else if (state === 'end') {
+                            handleDrop(e);
+                        }
+                    }
+                };
+            }
+            else {
+                g2d.getView().addEventListener("dragover", function (e) {
+                    e.dataTransfer.dropEffect = "copy";
+                    e.preventDefault();
+
+                    // 从palette面板上拖拽到拓扑图上，还未放开鼠标时 经过group则加一个边框
+                    var data = g2d.getDataAt(e);
+                    if (data instanceof ht.Group || (data && data.getParent() instanceof ht.Group)) {
+                        group = (data.getParent() instanceof ht.Group) ? data.getParent() : data;
+                        group.s({
+                            'border.color': 'rgb(26,189,156)',
+                            'border.width': 1
+                        });
+                    }
+                    else {
+                        if (group) group.s('border.width', 0);
+                    }
+                });
+                g2d.getView().addEventListener("drop", function (e) {
+                    handleDrop(e);
+                });
+            }
+        }
+
+        // 初始化树组件
+        function initTreeView() {
+            // 重载树组件上的文本显示
+            treeView.getLabel = function (data) {
+                if (data instanceof ht.Text) {
+                    return data.s('text');
+                }
+                else if (data instanceof ht.Shape) {
+                    return data.getName() || '不规则图形'
+                }
+                return data.getName() || '节点'
+            };
+
+            // 重载树组件上的图标显示
+            var oldGetIconFunc = treeView.getIcon;
+            treeView.getIcon = function (data) {
+                if (data instanceof ht.Text) {
+                    return 'symbols/text.json';
+                }
+                var img = data.getImage();
+                return img ? img : oldGetIconFunc.apply(this, arguments);
+            }
+        }
+
+        // 初始化属性组件
+        function initPropertyView() {
+            propertyPane.setHeaderLabels(['属性', '值']);
+            var propertyView = propertyPane.getPropertyView();
+            dataModel.sm().ms(function (e) {// 监听选中变化事件
+                propertyView.setProperties(null);
+                var data = dataModel.sm().ld();
+
+                // 针对不同类型的节点设置不同的属性内容
+                if (data instanceof ht.Text) {// 文本类型
+                    propertyView.addProperties(text_properties);
+                    return;// 设置文本类型不显示其他数据
+                }
+                if (data instanceof ht.Data) {// data 类型，所有的节点都基于这个类型
+                    propertyView.addProperties(data_properties);
+                }
+                if (data instanceof ht.Node) {// node 类型
+                    propertyView.addProperties(node_properties);
+                }
+                if (data instanceof ht.Group) {// 组类型
+                    propertyView.addProperties(group_properties);
+                }
+                if (data instanceof ht.Edge) {// 连线类型
+                    propertyView.addProperties(edge_properties);
+                }
+            });
+        }
+
+        // 被拖拽的元素在目标元素上同时鼠标放开触发的事件
+        function handleDrop(e) {
+            e.preventDefault();
+
+            // 获取 palette 面板上最后选中的节点
+            var paletteNode = palette.dm().sm().ld();
+            if (paletteNode) {
+                var item = paletteNode.item,
+                    image = item.image;
+
+                // 获取事件下的节点
+                data = g2d.getDataAt(e, null, 5);
+
+                var node = new (item.type || ht.Node)();
+                node.setImage(image);
+                node.setName(item.name);
+                node.p(g2d.lp(e));
+                node.s('label', '');
+                node.setLayer(1);
+
+                g2d.dm().add(node);
+                g2d.sm().ss(node);
+            }
+        }
+
+        function init() {
+            initPalette();
+            initGraphView();
+            initTreeView();
+            initPropertyView();
+            resetDefault();
+
+            mainSplit.addToDOM();
+
+            g2d.fitContent(true);
+        }
+    </script>
+</head>
+
+<body onload="init();">
+</body>
+
+</html>

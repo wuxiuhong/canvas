@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>拖拽</title>
+    <style>
+        #myCanvas {
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div id="canvas-warp">
+    <canvas id="myCanvas" width="400" height="400"></canvas>
+</div>
+
+<script>
+    window.onload = function () {
+        var can = document.getElementById('myCanvas'),
+            gd = can.getContext('2d'),
+            x = 0,
+            y = 0,
+            w = 100,
+            h = 100;
+        gd.fillStyle = 'red';
+        gd.fillRect(x, y, w, h);
+        can.onmousedown = function (ev) {
+            var ev = ev || window.event;
+            var downx = ev.clientX;
+            var downy = ev.clientY;
+            if (downx > x && downy < x + w && downy > y && downy < y + h) {
+                var disx = downx - x;
+                var disy = downy - y;
+                can.onmousemove = function (ev) {
+                    var ev = ev || window.event;
+                    x = ev.clientX - disx;
+                    y = ev.clientY - disy;
+                    gd.clearRect(0, 0, can.width, can.height);
+                    gd.fillRect(x, y, w, h);
+                }
+
+                can.onmouseup = function () {
+                    can.onmousemove = null;
+                    can.onmouseup = null;
+                }
+                return false;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
