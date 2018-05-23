@@ -47,12 +47,76 @@
             }
         ]
     };
-    new Draw('', {
-        width: data.width,
-        height: data.height
-    }).init({
-        data: data.comps
-    })
+
+    var event = new MaxCanvas.Notifier();
+    var dm$1 = new MaxCanvas.DataModel();
+    var g2d = window.g2d = new MaxCanvas.graph.GraphView(dm$1);
+
+    MaxCanvas.xhrLoad('displays/demo/1', function (text) {
+        var json = text;
+        new Draw().init({
+            data: json
+        })
+    });
+
+    var G = {};
+
+
+    G.addClickListener = function (dom, func) {
+        dom.addEventListener('click', func);
+        dom.addEventListener('touchend', func);
+    };
+
+    G.addClickListener(g2d.getView(), function (e) {
+        var target = g2d.getDataAt(e);
+        if (target === cityHover) {
+            lamppost.s('2d.visible', true);
+
+            cityHover.s('2d.visible', false);
+            mapHost.getAttaches().each(function (d) {
+                d.s('2d.visible', false);
+            });
+            map.getAttaches().each(function (d) {
+                d.s('2d.visible', false);
+            });
+            event.fire({ kind: 'showLamppost' });
+        } else if (target === showMap || !target && lamppost.s('2d.visible')) {
+            lamppost.s('2d.visible', false);
+
+            cityHover.s('2d.visible', true);
+            mapHost.getAttaches().each(function (d) {
+                d.s('2d.visible', true);
+            });
+            map.getAttaches().each(function (d) {
+                d.s('2d.visible', true);
+            });
+            event.fire({ kind: 'hideLamppost' });
+        }
+    });
+
+
+    G.e = new MaxCanvas.Notifier();
+
+    var dm = g2d.dm();
+    var cityHover = void 0;
+    var lamppost = void 0;
+    var mapHost = void 0;
+    var showMap = void 0;
+    var map = void 0;
+    var dirty = false;
+    var inAnimate = false;
+
+    G.e.add(function (e) {
+        if (e === 'init') {
+            resetFontSize(g2d.getZoom());
+        }
+    });
+
+
+
+
+
+
 </script>
 
 </body>

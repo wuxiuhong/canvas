@@ -1,0 +1,192 @@
+{
+  "version": "1.0.0",
+  "config": {
+    "scale": {
+      "x": 1.5,
+      "y": 1.5
+    },
+    "location": {
+      "x": 0,
+      "y": 0
+    },
+    "autoAdjustIndex": true,
+    "hierarchicalRendering": true
+  },
+  "data": [
+    {
+      "id": 1,
+      "type": "M.block",
+      "config": {
+        "displayName": "背景",
+        "width": 1366,
+          "height": 768,
+          "location": {
+          "x": 204,
+          "y": -55
+        },
+        "tag": "map",
+        "clickThroughEnabled": true
+      },
+      "styles": {
+        "2d.movable": false,
+        "select.width": 0
+      }
+    },
+    {
+      "id": 2,
+      "type": "M.Node",
+      "config": {
+        "name": "节点名称",
+        "displayName": "背景",
+        "width": 1366,
+        "height": 768,
+        "parentId": 1,
+        "location": {
+          "x": 204,
+          "y": -55
+        }
+      },
+      "styles": {
+        "2d.movable": false,
+        "select.width": 0,
+        "shape": "rect",
+        "shape.background": "rgb(3, 11, 33)",
+        "shape.border.color": "#979797",
+        "shape.gradient.color": null
+      }
+    },
+    {
+      "id": 3,
+      "type": "M.Node",
+      "config": {
+        "displayName": "地图背景",
+        "image": "symbols/demo/1",
+        "parentId": 1,
+        "location": {
+          "x": 204,
+          "y": -55
+        }
+      },
+      "styles": {
+        "2d.movable": false,
+        "select.width": 0,
+        "2d.selectable": false,
+        "opacity": 0.2
+      }
+    },
+    {
+      "id": 4,
+      "type": "M.Text",
+      "config": {
+        "parentId": 1,
+        "dataBindings": {
+          "styles": {
+            "text": {
+              "id": "discTotal"
+            }
+          }
+        },
+        "rotation": 3.5623,
+        "anchor": {
+          "x": 0.55995,
+          "y": 0.5
+        },
+        "location": {
+          "x": 204,
+          "y": -55
+        },
+        "scale": {
+          "x": 1.5,
+          "y": 1.5
+        }
+      },
+      "styles": {
+        "2d.movable": false,
+        "select.width": 0,
+        "text": "文字内容",
+        "text.color": "rgb(224,118,25)"
+      }
+    },
+    {
+      "id": 5,
+      "type": "M.Shape",
+      "config": {
+        "parentId": 1,
+        "location": {
+          "x": 204,
+          "y": -55
+        },
+        "points": [
+          {
+            "x": 204,
+            "y": -55
+          },
+          {
+            "x": 204,
+            "y": -55
+          }
+        ],
+        "segments": [
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "rotation": 6.28319
+      },
+      "styles": {
+        "2d.movable": false,
+        "select.width": 0,
+        "shape.background": null,
+        "shape.border.cap": "round",
+        "shape.border.color": "rgb(224,118,25)",
+        "shape.border.width": 1,
+        "shape.gradient": "radial.center",
+        "shape.gradient.color": "rgb(12,19,51)"
+      }
+    },
+    {
+      "id": 6,
+      "type": "M.Node",
+      "defaultData": {
+        "dataSource": "[{'no': '001','intro': 'Boston能展区灯00001-LED通讯故障解除','time':'2017.10.20',{ 'no': '001','intro': 'Boston能展区灯00001-LED通讯故障解除','time':'2017.10.20' },{ 'no': '001','intro': 'Boston能展区灯00001-LED通讯故障解除','time':'2017.10.20' } }]",
+        "table.columns": "[{'align': 'center','key': 'no','width': 40,'color': 'rgb(117,175,255)' },{'align': 'center','key': 'no','width': 40, 'color': 'rgb(117,175,255)' },{ 'align': 'center','key': 'no','width': 40,'color': 'rgb(117,175,255)' }]",
+        "table.translate.y": 0
+      },
+      "config": {
+        "displayName": "地图背景",
+        "dataBindings": {
+          "defaultData": {
+            "id": "tableColumns"
+          }
+        },
+        "image": "symbols/demo/table/1",
+        "parentId": 1,
+        "location": {
+          "x": 204,
+          "y": -55
+        },
+        "tag": "messageTable"
+      },
+      "styles": {
+        "2d.movable": false
+      }
+    },
+    {
+      "type": "M.Edge",
+      "id": 7,
+      "p": {
+        "source": {
+          "id": 5
+        },
+        "target": {
+          "id": 6
+        }
+      }
+    }
+  ]
+}

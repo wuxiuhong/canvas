@@ -1,23 +1,22 @@
 // 开始绘画
-function Draw(id, options) {
+function Draw(id = null) {
     if (id) {
         var canvas = document.getElementById(id);
         var w = canvas.width;
         var h = canvas.height;
+
+        var dpr = window.devicePixelRatio || 1;
+
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+
+        canvas.width = dpr * w;
+        canvas.height = dpr * h;
     } else {
         var canvas = document.createElement('canvas');
-        var w = options.width;
-        var h = options.height;
+        // var w = options.width;
+        // var h = options.height;
     }
-
-    var dpr = window.devicePixelRatio || 1;
-
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-
-    canvas.width = dpr * w;
-    canvas.height = dpr * h;
-
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d');
     // customCanvas(this.context);
@@ -103,4 +102,21 @@ customCanvas.prototype.createGetSet = function (name) {
         }
     }
 }
+
+/**
+ * 主大类
+ */
+var MaxCanvas = {};
+
+MaxCanvas.xhrLoad = function () {
+
+};
+
+MaxCanvas.Notifier = function () {
+    var add = function (S, T, n) {
+        // 添加动态加载
+    }
+};
+
+
 
