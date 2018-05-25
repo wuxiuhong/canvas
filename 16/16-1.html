@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>设计模式</title>
+</head>
+<body>
+<script>
+    /**
+     * 构造函数模式
+     * 构造一个动物的函数
+     * @param name
+     * @param color
+     * @constructor
+     */
+    function Animal1(name, color) {
+        this.name = name;
+        this.color = color;
+        this.getName = function () {
+            return this.name;
+        }
+    }
+
+    // 实例一个对象
+    var cat1 = new Animal1('猫', '白色');
+    console.log(cat1.getName());
+
+
+    // 工厂模式
+    function Animal2(opts) {
+        var obj = new Object();
+        obj.name = opts.name;
+        obj.color = opts.color;
+        obj.getInfo = function () {
+            return '名称：' + obj.name;
+        }
+        return obj;
+    }
+
+    // 实例一个对象
+    var cat2 = new Animal2({name: "波斯猫", color: '金色'});
+    console.log(cat2.getInfo());
+
+
+    /**
+     * 模块模式 = 封装大部分代码，只暴露必需接口
+     */
+    var Car = (function () {
+        var name = "法拉利";
+
+        function sayName() {
+            console.log(name);
+        }
+
+        function getColor(name) {
+            console.log(name)
+        }
+
+        return {
+            name: sayName,
+            color: getColor
+        }
+    })();
+    Car.name();
+    Car.color('红色');
+
+    /**
+     * 混合模式 = 原型模式 + 构造函数模式
+     */
+    function Animal3(name, color) {
+        this.name = name;
+        this.color = color;
+        console.log(this.name + this.color);
+    }
+
+    Animal3.prototype.getInfo = function () {
+        console.log('名称：' + this.name);
+    }
+
+    function largeCat(name, color) {
+        Animal3.call(null, name, color);
+        this.color = color;
+    }
+
+    largeCat.prototype = create(Animal3.prototype);
+
+    function create(obj) {
+        function F() {
+        }
+
+        F.prototype = obj;
+        return new F();
+    }
+
+    largeCat.prototype.getColor = function () {
+        return this.color;
+    }
+    var cat3 = new largeCat('persian', 'white');
+    console.log(cat3);
+
+
+    /**
+     * 单例模式，在执行当前 Single 只获得唯一一个对象
+     */
+
+    var Single = (function () {
+        var instance;
+
+        function init() {
+            return {};
+        }
+
+        return {
+            // 获取实例
+            getInstance: function () {
+                if (!instance) {
+                    instance = init();
+                }
+                return instance;
+            }
+        }
+    })();
+
+    var obj1 = Single.getInstance();
+    var obj2 = Single.getInstance();
+
+    console.log(obj1 === obj2);
+
+    /**
+     * 发布订阅模式
+     */
+
+    var EventCenter = (function () {
+        var events = {};
+
+        // 绑定事件 添加回调
+        function on(evt, handler) {
+            events[evt] = events[evt] || [];
+            events[evt].push({
+                handler: handler
+            });
+        }
+
+        function fire(evt, arg) {
+            if (!events[evt]) return;
+            for (var i = 0; i < events[evt].length; i++) {
+                events[evt][i].handler(arg);
+            }
+        }
+
+        function off(evt) {
+            delete events[evt];
+        }
+
+        return {
+            on: on,
+            fire: fire,
+            off: off
+        }
+    })();
+
+    var number = 1;
+    EventCenter.on('click', function (data) {
+        console.log('click事件' + data + number++ + '次数');
+    });
+    EventCenter.off('click'); // 绑定一次
+    EventCenter.on('click', function (data) {
+        console.log('click 事件' + data + number++ + '次');
+    });
+
+    EventCenter.fire('click', '绑定');
+
+
+    /**
+     * Module Pattern
+     * 封装 保护状态和行为； 私存的范围即保护变量和方法闭包，闭包之外无法访问值
+     * @type {{callChangeHTML}}
+     * @return 返回的是一个对象而不是函数
+     */
+    var HTMLChanger = (function () {
+        var contents = "content";
+        var changeHTML = function () {
+            // var element = document.getElementById('attribute-to-change');
+            // element.innerHTML = contents;
+            console.log('测试' + contents);
+        }
+        return {
+            callChangeHTML: function () {
+                changeHTML();
+                console.log(contents);
+            }
+        }
+    })();
+
+    HTMLChanger.callChangeHTML();    // Outputs: 'contents'
+    console.log(HTMLChanger.contents, '22');  // undefined
+
+    /**
+     * Revealing Module Pattern
+     * @type {{first, second}}
+     */
+    var Exposet = (function () {
+        var privateVariable = 10;
+
+        var privateMethod = function () {
+            console.log('Inside a private method!');
+            privateVariable++;
+        }
+
+        var methodToExpose = function () {
+            console.log('This is a method I want to expose!');
+        }
+
+        var otherMethodIWantToExpose = function () {
+            privateMethod();
+        }
+
+        return {
+            first: methodToExpose,
+            second: otherMethodIWantToExpose
+        }
+    })();
+
+    Exposet.first();
+    Exposet.second();
+    Exposet.methodToExpose;
+
+
+    /**
+     * Prototype Design Pattern
+     */
+    var TeslaModels = function () {
+        this.numWheels = 4;
+        this.manufacturer = 'Tesla';
+        this.make = 'Model S';
+    };
+
+    TeslaModels.prototype.go = function () {
+
+    };
+
+    TeslaModels.prototype.stop = function () {
+
+    };
+    // 或者属性对象形式
+    TeslaModels.prototype = {
+        go: function () {
+
+        },
+        stop: function () {
+
+        }
+    };
+
+    // 显示揭露
+    // 在返回对象的作用域之外，函数停止和移动的方式将与返回对象隔离。
+    TeslaModels.prototype = function () {
+        var go = function () {
+
+        };
+        var stop = function () {
+
+        };
+        return {
+            pressGasPedal: go,
+            pressBrakePedal: stop
+        }
+    }();
+
+    /**
+     * Observer Design Pattern
+     */
+
+    var Subject = function () {
+        var observers = [];
+        return {
+            // 订阅
+            subscribeObserver: function (observer) {
+                observers.push(observer);
+            },
+            // 取消订阅
+            unsubscribeObserver: function (observer) {
+                var index = observers.indexOf(observer)
+                if (index > -1) observers.splice(index, 1);
+            },
+            // 通知
+            notifyObserver: function (observer) {
+                var index = observers.indexOf(observer);
+                if (index > -1) observers[index].notify(index)
+
+            },
+            // 通知所有
+            notifyAllObservers: function () {
+                for (var i = 0; i < observers.length; i++) {
+                    observers[i].notify(i)
+                }
+            }
+        };
+    };
+
+    var Observer = function () {
+        return {
+            notify: function (index) {
+                console.log("Observer " + index + " is notified!");
+            }
+        }
+    };
+
+    var subject = new Subject();
+
+    var observer1 = new Observer();
+    var observer2 = new Observer();
+    var observer3 = new Observer();
+    var observer4 = new Observer();
+
+    subject.subscribeObserver(observer1);
+    subject.subscribeObserver(observer2);
+    subject.subscribeObserver(observer3);
+    subject.subscribeObserver(observer4);
+
+    subject.notifyObserver(observer1); // Observer 1 is notified!
+    subject.notifyObserver(observer2); // Observer 2 is notified!
+    subject.unsubscribeObserver(observer2);
+    subject.notifyAllObservers();
+    // Observer 1 is notified!
+    // Observer 3 is notified!
+    // Observer 4 is notified!
+</script>
+</body>
+</html>
